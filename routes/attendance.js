@@ -1,12 +1,12 @@
 const express = require("express")
+const { ObjectId } = require("mongoose")
 const router = express.Router()
 
 const Attendance = require("../models/attendance")
 const Data = require("../models/data")
 
 router.get("/", async (req, res) => {
-    const attendance = await Attendance.find()
-    res.render("index", { attendance: attendance })
+    res.redirect("/")
 })
 
 router.get("/show/:id", async (req, res) => {
@@ -34,16 +34,21 @@ router.post("/new", async (req, res, next) => {
 
 router.get("/view/:id", async (req, res) => {
     const data = await Data.findOne({ id: req.params.id})
-    const users = await Attendance.find({ att_id: req.params.id })
-    console.log(JSON.stringify(users))
+    const users = await Attendance.find({ att_id: req.params.id }).sort({ sanitizedname: "asc"})
     res.render("view", { users: users, data: data})
 })
 
 router.post("/delete/:id", async (req, res) => {
-    await Attendance.deleteMany({ att_id: req.params.id }, (err, result) => {
-        if(err) console.log(err)
-    })
-    await Data.findOneAndRemove({ id: req.params.id})
+    const id_ = req.params.id
+    
+    await Data.findByIdAndRemove({ _id: id_ })
+
+    await Attendance.deleteMany({ att_id: req.params.id }).then(function(){
+        console.log("")
+    }).catch(function(error){
+        console.log(error)
+    });
+    
     res.redirect("/")
 })
 
