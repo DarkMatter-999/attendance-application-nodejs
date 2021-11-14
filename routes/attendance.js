@@ -32,14 +32,23 @@ router.post("/new", async (req, res, next) => {
     next()
 }, saveAndRedirectNew("new"))
 
+router.get("/view/:id", async (req, res) => {
+    const data = await Data.findOne({ id: req.params.id})
+    const users = await Attendance.find({ att_id: req.params.id })
+    console.log(JSON.stringify(users))
+    res.render("view", { users: users, data: data})
+})
+
 router.post("/delete/:id", async (req, res) => {
+    await Attendance.deleteMany({ att_id: req.params.id }, (err, result) => {
+        if(err) console.log(err)
+    })
     await Data.findOneAndRemove({ id: req.params.id})
     res.redirect("/")
 })
 
 function saveAndRedirect(path) {
     return async (req, res) => {
-        console.log(JSON.stringify(req.body));
         let attendance = req.attendance
         attendance.name = req.body.name
         attendance.batch = req.body.batch
@@ -57,7 +66,6 @@ function saveAndRedirect(path) {
 
 function saveAndRedirectNew(path) {
     return async (req, res) => {
-        console.log(JSON.stringify(req.body));
         let data = req.data
         data.subject = req.body.subject
 
