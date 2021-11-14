@@ -15,9 +15,11 @@ app.use(express.urlencoded({ extended: false}))
 app.use("/attendance", attendanceRouter)
 
 const Attendance = require("./models/attendance")
+const Data = require("./models/data")
+
 app.get("/", async (req, res) => {
-    const attendance = await Attendance.find().sort({ date: "desc"})
-    res.render("index.ejs", { attendance : attendance})
+    const data = await Data.find().sort({ date: "desc"})
+    res.render("index.ejs", { data : data })
 })
 
 app.listen(80)

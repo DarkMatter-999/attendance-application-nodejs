@@ -8,10 +8,6 @@ const dataSchema = new mongoose.Schema({
     subject: {
         type: String,
         required: true
-    },
-    batch: {
-        type: String,
-        required: true
     }
 })
 
